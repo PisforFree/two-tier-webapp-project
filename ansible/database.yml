@@ -1,0 +1,53 @@
+---
+- name: Configure Database Server
+  hosts: database
+  become: yes
+
+  vars:
+    db_name: twotierdb
+    db_user: andrade72
+    db_password: "(@6r73LwEs"
+
+  tasks:
+    - name: Update system packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install MySQL server
+      yum:
+        name: mariadb-server
+        state: present
+
+    - name: Install Python 3 and pip
+      yum:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Install PyMySQL with pip
+      pip:
+        name: PyMySQL
+        executable: pip3
+
+    - name: Start and enable MySQL service
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create application database
+      community.mysql.mysql_db:
+        name: "{{ db_name }}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: Create database user
+      community.mysql.mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        priv: "{{ db_name }}.*:ALL"
+        host: "%"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock

@@ -1,0 +1,57 @@
+---
+- name: Configure Frontend Server
+  hosts: frontend
+  become: yes
+
+  vars:
+    db_host: 172.16.3.31
+    db_name: twotierdb
+    db_user: andrade72
+    db_password: "(@6r73LwEs"
+
+  tasks:
+    - name: Update system packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install Apache and PHP
+      yum:
+        name:
+          - httpd
+          - php
+          - php-mysqlnd
+        state: present
+
+    - name: Start and enable Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Deploy index.php application
+      copy:
+        dest: /var/www/html/index.php
+        content: |
+          <?php
+          $conn = new mysqli("{{ db_host }}", "{{ db_user }}", "{{ db_password }}", "{{ db_name }}");
+
+          if ($conn->connect_error) {
+              die("Database connection failed: " . $conn->connect_error);
+          }
+
+          echo "<h1>I'm a great Cloud Engineer!</h1>";
+          echo "<p>Database connection successful!</p>";
+
+          $conn->close();
+          ?>
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: Allow Apache through firewall service if present
+      ignore_errors: yes
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
