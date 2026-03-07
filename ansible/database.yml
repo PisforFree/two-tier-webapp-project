@@ -1,7 +1,9 @@
 ---
-- name: Configure Database Server
+- name: Configure database server
   hosts: database
-  become: yes
+  become: true
+  collections:
+    - community.mysql
 
   vars:
     db_name: twotierdb
@@ -9,33 +11,27 @@
     db_password: "(@6r73LwEs"
 
   tasks:
-    - name: Update system packages
-      yum:
-        name: "*"
-        state: latest
+    - name: Refresh yum cache
+      ansible.builtin.yum:
+        update_cache: true
 
-    - name: Install MySQL server
-      yum:
-        name: mariadb-server
-        state: present
-
-    - name: Install Python 3 and pip
-      yum:
+    - name: Install MariaDB server
+      ansible.builtin.yum:
         name:
-          - python3
+          - mariadb-server
           - python3-pip
         state: present
 
-    - name: Install PyMySQL with pip
-      pip:
+    - name: Install PyMySQL
+      ansible.builtin.pip:
         name: PyMySQL
-        executable: pip3
+        state: present
 
-    - name: Start and enable MySQL service
-      service:
+    - name: Start and enable MariaDB
+      ansible.builtin.service:
         name: mariadb
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Create application database
       community.mysql.mysql_db:
@@ -43,7 +39,7 @@
         state: present
         login_unix_socket: /var/lib/mysql/mysql.sock
 
-    - name: Create database user
+    - name: Create application database user
       community.mysql.mysql_user:
         name: "{{ db_user }}"
         password: "{{ db_password }}"
