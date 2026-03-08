@@ -2,7 +2,6 @@
 - name: Configure database server
   hosts: database
   become: true
-
   vars:
     db_name: twotierdb
     db_user: andrade72
@@ -45,4 +44,3 @@
         host: "%"
         state: present
         login_unix_socket: /var/lib/mysql/mysql.sock
-
