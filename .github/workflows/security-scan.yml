@@ -47,5 +47,15 @@ jobs:
       - name: Run Checkov
         run: checkov -d ./terraform || true
 
-      - name: Run ansible-lint
-        run: ansible-lint ./ansible
+            - name: Show ansible-lint version
+        run: ansible-lint --version
+
+      - name: Show playbooks with line numbers
+        run: |
+          echo "===== frontend.yml ====="
+          nl -ba ansible/frontend.yml
+          echo "===== database.yml ====="
+          nl -ba ansible/database.yml
+
+      - name: Run ansible-lint with line numbers
+        run: ansible-lint ./ansible -p
