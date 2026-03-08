@@ -47,7 +47,7 @@ jobs:
       - name: Run Checkov
         run: checkov -d ./terraform || true
 
-            - name: Show ansible-lint version
+      - name: Show ansible-lint version
         run: ansible-lint --version
 
       - name: Show playbooks with line numbers
