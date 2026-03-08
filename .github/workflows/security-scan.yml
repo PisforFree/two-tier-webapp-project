@@ -23,10 +23,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Checkov and ansible-lint
+      - name: Install Checkov and Ansible tools
         run: |
           python -m pip install --upgrade pip
-          pip install checkov ansible-lint ansible
+          pip install checkov
+          pip install "ansible-core==2.17.2" "ansible-lint==24.7.0"
 
       - name: Install Ansible MySQL collection
         run: |
@@ -58,4 +59,4 @@ jobs:
           nl -ba ansible/database.yml
 
       - name: Run ansible-lint with line numbers
-        run: ansible-lint ./ansible -p
+        run: ansible-lint ./ansible --format pep8
