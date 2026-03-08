@@ -2,8 +2,6 @@
 - name: Configure database server
   hosts: database
   become: true
-  collections:
-    - community.mysql
 
   vars:
     db_name: twotierdb
@@ -47,3 +45,4 @@
         host: "%"
         state: present
         login_unix_socket: /var/lib/mysql/mysql.sock
+
